@@ -13,6 +13,13 @@ func LoginUserController(c echo.Context) error {
 	user := models.User{}
 	c.Bind(&user)
 
+	if user.Email == "" || user.Password == "" {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "Email and password are required",
+			"user":    nil,
+		})
+	}
+
 	authUser, err := database.LoginUser(&user)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
