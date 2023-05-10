@@ -21,7 +21,13 @@ func New(e *echo.Echo, db *gorm.DB) {
 	//user account
 	user := e.Group("/users", mid.JWT([]byte(cons.SECRET_JWT)))
 	user.GET("/:id", controllers.GetUsersIdController)
-	user.GET("", controllers.GetUsersIdController)
 	user.DELETE("/:id", controllers.DeleteUserController)
 	user.PUT("/:id", controllers.UpdateUserController)
+
+	//waktu donor
+	pendonor := e.Group("/pendonor", mid.JWT([]byte(cons.SECRET_JWT)))
+	pendonor.POST("", controllers.CreatePendonorController)
+	pendonor.GET("/:id", controllers.GetPendonorId)
+	pendonor.DELETE("/:id", controllers.DeletePendonorController)
+	pendonor.PUT("/:id", controllers.UpdatePendonorController)
 }
