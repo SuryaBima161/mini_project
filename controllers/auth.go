@@ -1,52 +1,32 @@
 package controllers
 
 import (
-	"mini_project/lib/database"
-	"mini_project/middleware"
-	"mini_project/models"
+	"mini_project/models/payload"
+	"mini_project/usecase"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
 func LoginUserController(c echo.Context) error {
-	user := models.User{}
+	user := payload.LoginUserRequest{}
 	c.Bind(&user)
-
-	if user.Email == "" || user.Password == "" {
+	if err := c.Validate(&user); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"message": "Email and password are required",
-			"user":    nil,
+			"messages":         "error login user",
+			"errorDescription": err,
 		})
 	}
 
-	authUser, err := database.LoginUser(&user)
+	resp, err := usecase.LoginUser(&user)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"message": "Failed to login",
-			"error":   err.Error(),
-			"user":    authUser,
-		})
-	}
-
-	if user.ID == 0 {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"message": "Invalid email or password",
-			"user":    nil,
+			"messages":         "record not found",
+			"errorDescription": err,
 		})
 	}
-
-	token, err := middleware.CreateToken(int(user.ID), user.Name)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"message": "Failed to create token",
-			"error":   err.Error(),
-		})
-	}
-
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "Login success!",
-		"token":   token,
+		"user":    resp,
 	})
-
 }

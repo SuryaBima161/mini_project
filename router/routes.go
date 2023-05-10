@@ -3,23 +3,25 @@ package routes
 import (
 	cons "mini_project/constant"
 	"mini_project/controllers"
+	"mini_project/util"
 
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	mid "github.com/labstack/echo/v4/middleware"
+	"gorm.io/gorm"
 )
 
-func New() *echo.Echo {
-	e := echo.New()
-	//login n sign in
+func New(e *echo.Echo, db *gorm.DB) {
+	e.Validator = &util.CustomValidator{Validator: validator.New()}
+
+	//login n register
 	e.POST("/login", controllers.LoginUserController)
-	e.POST("/users", controllers.CreateUserController)
+	e.POST("/register", controllers.CreateUserController)
 
-	//JWT
-	user := e.Group("", middleware.JWT([]byte(cons.SECRET_JWT)))
-	user.GET("/users", controllers.GetUserControllers)
-	user.GET("/users/:id", controllers.GetUsersIdController)
-	user.DELETE("/users/:id", controllers.DeleteUserController)
-	user.PUT("/users/:id", controllers.UpdateUserController)
-
-	return e
+	//user account
+	user := e.Group("/users", mid.JWT([]byte(cons.SECRET_JWT)))
+	user.GET("/:id", controllers.GetUsersIdController)
+	user.GET("", controllers.GetUsersIdController)
+	user.DELETE("/:id", controllers.DeleteUserController)
+	user.PUT("/:id", controllers.UpdateUserController)
 }
