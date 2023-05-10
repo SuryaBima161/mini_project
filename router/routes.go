@@ -30,4 +30,11 @@ func New(e *echo.Echo, db *gorm.DB) {
 	pendonor.GET("/:id", controllers.GetPendonorId)
 	pendonor.DELETE("/:id", controllers.DeletePendonorController)
 	pendonor.PUT("/:id", controllers.UpdatePendonorController)
+
+	//cek riwayat kesehatan
+	riwayat := e.Group("/riwayat", mid.JWT([]byte(cons.SECRET_JWT)))
+	riwayat.POST("", controllers.CreateRiwayatController)
+	riwayat.GET("/:id", controllers.GetRiwayatId)
+	riwayat.DELETE("/:id", controllers.DeleteRiwayatController)
+	riwayat.PUT("/:id", controllers.UpdateRiwayatController)
 }

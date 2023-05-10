@@ -4,11 +4,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
+type Riwayat struct {
 	gorm.Model
-	ID       uint   `json:"id" from:"id"`
-	Name     string `json:"name" form:"name"`
-	Email    string `json:"email" form:"email"`
-	Password string `json:"password" form:"password"`
-	Token    string `gorm:"-"`
+	ID                  uint   `json:"id" from:"id"`
+	Pendonor_id         uint   `json:"pendonor_id" from:"pendonor_id"`
+	Tanggal_Pemeriksaan string `json:"tanggal_pemeriksaan" form:"tanggal_pemeriksaan"`
+	Hasil_Pemeriksaan   string `json:"hasil_pemeriksaan" form:"hasil_pemeriksaan"`
+	Golongan_Darah      string `json:"golongan_darah" form:"golongan_darah"`
 }
