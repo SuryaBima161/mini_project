@@ -12,7 +12,7 @@ import (
 )
 
 // get user by id
-func getBloodDonationController(c echo.Context) error {
+func GetBloodDonationController(c echo.Context) error {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 	user, err := usecase.GetBloodDonation(uint(id))
 

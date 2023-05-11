@@ -37,4 +37,19 @@ func New(e *echo.Echo, db *gorm.DB) {
 	medicalhistory.GET("/:id", controllers.GetMedicalHistory)
 	medicalhistory.DELETE("/:id", controllers.DeleteMedicalHistoryController)
 	medicalhistory.PUT("/:id", controllers.UpdateMedicalHistoryController)
+
+	//cek donasi darah nya
+	blooddonation := e.Group("/blooddonation", mid.JWT([]byte(cons.SECRET_JWT)))
+	blooddonation.POST("", controllers.CreateBloodDonationController)
+	blooddonation.GET("/:id", controllers.GetBloodDonationController)
+	blooddonation.DELETE("/:id", controllers.DeleteBloodDonationController)
+	blooddonation.PUT("/:id", controllers.UpdateBloodDonationController)
+
+	//cek detail donasi darah nya
+	detaildonation := e.Group("/detaildonation", mid.JWT([]byte(cons.SECRET_JWT)))
+	detaildonation.POST("", controllers.CreateDetailBloodDonationController)
+	// detaildonation.GET("/:id", controllers.GetDetailBloodDonationIdController)
+	detaildonation.GET("/:id", controllers.GetDetailBloodDonationTotalQtyController)
+	detaildonation.DELETE("/:id", controllers.DeleteDetailBloodDonationController)
+	detaildonation.PUT("/:id", controllers.UpdateDetailBloodDonationController)
 }

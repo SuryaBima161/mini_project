@@ -37,5 +37,5 @@ func InitDB() *gorm.DB {
 }
 
 func InitMigrate() {
-	DB.AutoMigrate(&models.User{}, &models.Donatur{}, &models.MedicalHistory{}, &models.BloodDonation{})
+	DB.AutoMigrate(&models.User{}, &models.Donatur{}, &models.MedicalHistory{}, &models.BloodDonation{}, &models.DetailBloodDonation{})
 }

@@ -4,7 +4,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type DonationBlood struct {
+type BloodDonation struct {
 	gorm.Model
 	ID             uint   `json:"id" from:"id"`
 	Pendonor_id    uint   `json:"pendonor_id" from:"pendonor_id"`

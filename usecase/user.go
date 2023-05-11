@@ -1,16 +1,19 @@
 package usecase
 
 import (
+	"errors"
 	"mini_project/config"
 	"mini_project/middleware"
 	"mini_project/models"
 	"mini_project/models/payload"
 	"mini_project/repository/database"
+	"mini_project/util"
 
 	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -24,7 +27,21 @@ func LoginUser(req *payload.LoginUserRequest) (resp payload.LoginUserResponse, e
 		fmt.Println("GetUser: Error getting user from database")
 		return
 	}
-	// generate jwt
+
+	if err := config.DB.Where(loginUser).First(loginUser).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			fmt.Println("User not found")
+			return payload.LoginUserResponse{}, errors.New("Invalid email or password")
+		}
+		fmt.Println("Error getting user from database:", err)
+		return payload.LoginUserResponse{}, err
+	}
+
+	// Pembandingan password
+	if err = bcrypt.CompareHashAndPassword([]byte(loginUser.Password), []byte(req.Password)); err != nil {
+		return
+	}
+	// generate jwts
 	token, err := middleware.CreateToken(int(loginUser.ID))
 	if err != nil {
 		fmt.Println("GetUser: Error Generate token")
@@ -55,13 +72,24 @@ func CreateUser(req *payload.CreateUserRequest) (resp payload.CreateUserResponse
 			"errorDescription": err,
 		})
 	}
+	if req.Password != "" {
+		hash, err := util.HashPassword(req.Password)
+		if err != nil {
+			return payload.CreateUserResponse{}, echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
+				"message":          "error hash password",
+				"errorDescription": err,
+			})
+		}
+		req.Password = hash
+	}
 	err = database.CreateUser(newUser)
 	if err != nil {
 		return
 	}
 	resp = payload.CreateUserResponse{
-		Name:  newUser.Name,
-		Email: newUser.Email,
+		Name:     newUser.Name,
+		Email:    newUser.Email,
+		Password: newUser.Password,
 	}
 	return
 }

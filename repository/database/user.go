@@ -3,10 +3,11 @@ package database
 import (
 	"mini_project/config"
 	"mini_project/models"
+	"mini_project/util"
 )
 
 func LoginUser(user *models.User) error {
-	if err := config.DB.Where("email = ? AND password = ?", user.Email, user.Password).First(user).Error; err != nil {
+	if err := config.DB.Where("email = ?", user.Email).First(user).Error; err != nil {
 		return err
 	}
 	return nil
@@ -19,8 +20,13 @@ func GetUser(id uint) (user *models.User, err error) {
 	return user, nil
 }
 
-func CreateUser(user *models.User) (err error) {
+func CreateUser(user *models.User) error {
+	hash, err := util.HashPassword(user.Password)
+	if err != nil {
+		return err
+	}
 
+	user.Password = hash
 	if err = config.DB.Create(&user).Error; err != nil {
 		return err
 	}
