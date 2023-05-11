@@ -12,85 +12,85 @@ import (
 )
 
 // get user by id
-func GetRiwayatId(c echo.Context) error {
+func GetMedicalHistory(c echo.Context) error {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
-	user, err := usecase.GetRiwayat(uint(id))
+	user, err := usecase.GetMedicalHistory(uint(id))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"messages":         "error get Riwayat",
+			"messages":         "error get  Medical History",
 			"errorDescription": err,
 		})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"status": "success",
+		"status": "success get Medical History",
 		"users":  user,
 	})
 }
 
 // create user
-func CreateRiwayatController(c echo.Context) error {
-	payload := payload.CreateRiwayatRequest{}
+func CreateMedicalHistoryController(c echo.Context) error {
+	payload := payload.CreateMedicalHistoryRequest{}
 	c.Bind(&payload)
 	//validate request body
 	if err := c.Validate(payload); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
-			"message":          "failed create Riwayat",
+			"message":          "failed create  Medical History",
 			"errorDescription": err,
 		})
 	}
-	respone, err := usecase.CreateRiwayat(&payload)
+	respone, err := usecase.CreateMedicalHistory(&payload)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"message":          "failed create Riwayat",
+			"message":          "failed create  Medical History",
 			"errorDescription": err,
 		})
 	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "success create Riwayat",
+		"message": "success create  Medical History",
 		"data":    respone,
 	})
 }
 
-func UpdateRiwayatController(c echo.Context) error {
+func UpdateMedicalHistoryController(c echo.Context) error {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
-	riwayat := models.Riwayat{}
-	c.Bind(&riwayat)
-	riwayat.ID = uint(id)
-	if err := usecase.UpdateRiwayat(&riwayat); err != nil {
+	medicalHistory := models.MedicalHistory{}
+	c.Bind(&medicalHistory)
+	medicalHistory.ID = uint(id)
+	if err := usecase.UpdateMedicalHistory(&medicalHistory); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"messages":         "error update Riwayat",
+			"messages":         "error update  Medical History",
 			"errorDescription": err,
-			"errorMessage":     "Mohon Maaf Riwayat tidak dapat di ubah",
+			"errorMessage":     "Sorry cant update Medical History now",
 		})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "success update user",
+		"message": "success update Medical History",
 	})
 }
 
 // delete user
-func DeleteRiwayatController(c echo.Context) error {
+func DeleteMedicalHistoryController(c echo.Context) error {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
-			"message":          "failed delete Riwayat",
+			"message":          "failed delete  Medical History",
 			"errorDescription": err,
 		})
 	}
 
-	err = usecase.DeleteRiwayat(uint(id))
+	err = usecase.DeleteMedicalHistory(uint(id))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
-			"message":          "failed delete Riwayat",
+			"message":          "failed delete  Medical History",
 			"errorDescription": err,
 		})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "success delete Riwayat",
+		"message": "success delete Medical History",
 	})
 
 }

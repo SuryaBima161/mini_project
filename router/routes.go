@@ -25,16 +25,16 @@ func New(e *echo.Echo, db *gorm.DB) {
 	user.PUT("/:id", controllers.UpdateUserController)
 
 	//waktu donor
-	pendonor := e.Group("/pendonor", mid.JWT([]byte(cons.SECRET_JWT)))
-	pendonor.POST("", controllers.CreatePendonorController)
-	pendonor.GET("/:id", controllers.GetPendonorId)
-	pendonor.DELETE("/:id", controllers.DeletePendonorController)
-	pendonor.PUT("/:id", controllers.UpdatePendonorController)
+	donatur := e.Group("/donatur", mid.JWT([]byte(cons.SECRET_JWT)))
+	donatur.POST("", controllers.CreateDonaturController)
+	donatur.GET("/:id", controllers.GetDonaturIdController)
+	donatur.DELETE("/:id", controllers.DeleteDonaturController)
+	donatur.PUT("/:id", controllers.UpdateDonaturController)
 
 	//cek riwayat kesehatan
-	riwayat := e.Group("/riwayat", mid.JWT([]byte(cons.SECRET_JWT)))
-	riwayat.POST("", controllers.CreateRiwayatController)
-	riwayat.GET("/:id", controllers.GetRiwayatId)
-	riwayat.DELETE("/:id", controllers.DeleteRiwayatController)
-	riwayat.PUT("/:id", controllers.UpdateRiwayatController)
+	medicalhistory := e.Group("/medicalhistory", mid.JWT([]byte(cons.SECRET_JWT)))
+	medicalhistory.POST("", controllers.CreateMedicalHistoryController)
+	medicalhistory.GET("/:id", controllers.GetMedicalHistory)
+	medicalhistory.DELETE("/:id", controllers.DeleteMedicalHistoryController)
+	medicalhistory.PUT("/:id", controllers.UpdateMedicalHistoryController)
 }

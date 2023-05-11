@@ -4,7 +4,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Pendonor struct {
+type Donatur struct {
 	gorm.Model
 	ID            uint   `json:"id" from:"id"`
 	User_id       uint   `json:"user_id" form:"user_id"`

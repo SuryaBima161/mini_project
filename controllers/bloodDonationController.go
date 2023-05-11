@@ -12,13 +12,13 @@ import (
 )
 
 // get user by id
-func GetPendonorId(c echo.Context) error {
+func getBloodDonationController(c echo.Context) error {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
-	user, err := usecase.GetPendonor(uint(id))
+	user, err := usecase.GetBloodDonation(uint(id))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"messages":         "error get pendonor",
+			"messages":         "error get blood donation",
 			"errorDescription": err,
 		})
 	}
@@ -30,67 +30,67 @@ func GetPendonorId(c echo.Context) error {
 }
 
 // create user
-func CreatePendonorController(c echo.Context) error {
-	payload := payload.CreatPendonorRequest{}
+func CreateBloodDonationController(c echo.Context) error {
+	payload := payload.CreateBloodDonationRequest{}
 	c.Bind(&payload)
 	//validate request body
 	if err := c.Validate(payload); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
-			"message":          "failed create pendonor",
+			"message":          "failed create PemberianDarah",
 			"errorDescription": err,
 		})
 	}
-	respone, err := usecase.CreatePendonor(&payload)
+	respone, err := usecase.CreateBloodDonation(&payload)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"message":          "failed create pendonor",
+			"message":          "failed create PemberianDarah",
 			"errorDescription": err,
 		})
 	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "success create pendonor",
+		"message": "success create PemberianDarah",
 		"data":    respone,
 	})
 }
 
-func UpdatePendonorController(c echo.Context) error {
+func UpdateBloodDonationController(c echo.Context) error {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
-	pendonor := models.Pendonor{}
-	c.Bind(&pendonor)
-	pendonor.ID = uint(id)
-	if err := usecase.UpdatePendonor(&pendonor); err != nil {
+	bloodDonation := models.BloodDonation{}
+	c.Bind(&bloodDonation)
+	bloodDonation.ID = uint(id)
+	if err := usecase.UpdateBloodDonation(&bloodDonation); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"messages":         "error update pendonor",
+			"messages":         "error update Blood Donation",
 			"errorDescription": err,
-			"errorMessage":     "Mohon Maaf pendonor tidak dapat di ubah",
+			"errorMessage":     "Sorry Can't Update Blood Donation",
 		})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "success update user",
+		"message": "success update Blood Donation",
 	})
 }
 
 // delete user
-func DeletePendonorController(c echo.Context) error {
+func DeleteBloodDonationController(c echo.Context) error {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
-			"message":          "failed delete pendonor",
+			"message":          "failed delete Blood Donation",
 			"errorDescription": err,
 		})
 	}
 
-	err = usecase.DeletePendonor(uint(id))
+	err = usecase.DeleteBloodDonation(uint(id))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
-			"message":          "failed delete pendonor",
+			"message":          "failed delete PemberianDarah",
 			"errorDescription": err,
 		})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "success delete pendonor",
+		"message": "success delete PemberianDarah",
 	})
 
 }
