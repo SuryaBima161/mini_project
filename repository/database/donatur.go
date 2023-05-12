@@ -5,12 +5,14 @@ import (
 	"mini_project/models"
 )
 
-func GetDonatur(id uint) (donatur models.Donatur, err error) {
-	// if err = config.DB.Preload("DetailBloodDonation").Find(&donatur, id).Error; err != nil {
-	// 	return donatur, err
-	// }
-	// return donatur, nil
-	if err = config.DB.Find(&donatur, id).Error; err != nil {
+func GetDonatur(id uint) (donatur *models.Donatur, err error) {
+	if err = config.DB.First(&donatur, id).Error; err != nil {
+		return donatur, err
+	}
+	return donatur, nil
+}
+func GetDonaturWithDetail(id uint) (donatur *models.Donatur, err error) {
+	if err = config.DB.Preload("DetailBloodDonation.TotalQty").First(&donatur, id).Error; err != nil {
 		return donatur, err
 	}
 	return donatur, nil

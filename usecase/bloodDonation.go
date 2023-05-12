@@ -15,16 +15,17 @@ import (
 
 func CreateBloodDonation(req *payload.CreateBloodDonationRequest) (resp payload.CreateBloodDonationRespone, err error) {
 
-	var existingUser models.BloodDonation
-	if err := config.DB.First(&existingUser, req.DonaturID, req.PenerimaID).First(&existingUser).Error; err == nil {
-		return payload.CreateBloodDonationRespone{}, echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
-			"message":          "Pendonor_id or Penerima_id not exists",
-			"errorDescription": err,
-		})
-	} else if err != gorm.ErrRecordNotFound {
+	var existingBloodDonation models.BloodDonation
+	if err := config.DB.Where("donatur_id = ? AND penerima_id = ?", req.DonaturID, req.PenerimaID).First(&existingBloodDonation).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return payload.CreateBloodDonationRespone{}, echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
+				"message":          "donatur_id or penerima_id does not exist",
+				"errorDescription": err.Error(),
+			})
+		}
 		return payload.CreateBloodDonationRespone{}, echo.NewHTTPError(http.StatusInternalServerError, map[string]interface{}{
 			"message":          "failed to query database",
-			"errorDescription": err,
+			"errorDescription": err.Error(),
 		})
 	}
 	newBloodDonation := &models.BloodDonation{
@@ -69,9 +70,6 @@ func UpdateBloodDonation(BloodDonation *models.BloodDonation) (err error) {
 	return
 }
 func DeleteBloodDonation(id uint) (err error) {
-	// DeleteBloodDonation := models.BloodDonation{
-	// 	ID: BloodDonationId,
-	// }
 	DeleteBloodDonation, err := database.GetBloodDonation(id)
 	if err != nil {
 		return err

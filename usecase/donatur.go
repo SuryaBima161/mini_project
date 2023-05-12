@@ -46,18 +46,26 @@ func CreateDonatur(req *payload.CreateDonaturRequest) (resp payload.CreateDonatu
 	return
 }
 
-func GetDonatur(id uint) (*payload.GetDonaturResponse, error) {
-	Donatur, err := database.GetDonatur(id)
+func GetDonatur(id uint) (resp payload.GetDonaturResponse, err error) {
+	donatur, err := database.GetDonatur(id)
 	if err != nil {
-		return nil, err
+		return payload.GetDonaturResponse{}, err
 	}
-	resp := payload.GetDonaturResponse{
-		UserID:       Donatur.UserID,
-		Name:         Donatur.Name,
-		JenisKelamin: Donatur.JenisKelamin,
-		Tanggallahir: Donatur.TanggalLahir,
+	var detailDonation []payload.GetDetailDonationResponse
+	for _, val := range donatur.DetailBloodDonation {
+		detailDonation = append(detailDonation, payload.GetDetailDonationResponse{
+			TotalQty: val.TotalQty,
+		})
 	}
-	return &resp, nil
+
+	resp = payload.GetDonaturResponse{
+		UserID:              donatur.UserID,
+		Name:                donatur.Name,
+		JenisKelamin:        donatur.JenisKelamin,
+		Tanggallahir:        donatur.TanggalLahir,
+		DetailBloodDonation: detailDonation,
+	}
+	return resp, nil
 }
 
 func UpdateDonatur(Donatur *models.Donatur) (err error) {

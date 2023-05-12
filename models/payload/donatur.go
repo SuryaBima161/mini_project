@@ -15,9 +15,10 @@ type (
 		Tanggallahir string `json:"tanggal_lahir"`
 	}
 	GetDonaturResponse struct {
-		UserID       uint   `json:"user_id"`
-		Name         string `json:"name"`
-		JenisKelamin string `json:"jenis_kelamin"`
-		Tanggallahir string `json:"tanggal_lahir"`
+		UserID              uint   `json:"user_id"`
+		Name                string `json:"name"`
+		JenisKelamin        string `json:"jenis_kelamin"`
+		Tanggallahir        string `json:"tanggal_lahir"`
+		DetailBloodDonation []GetDetailDonationResponse
 	}
 )

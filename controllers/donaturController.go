@@ -17,17 +17,18 @@ func GetDonaturIdController(c echo.Context) error {
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"messages":         "error get pendonor",
-			"errorDescription": err,
+			"messages":         "error get donatur",
+			"errorDescription": err.Error(),
 		})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"status": "success",
+		"status": "success get donatur",
 		"users":  user,
 	})
 }
 
+// create user
 func CreateDonaturController(c echo.Context) error {
 	payload := payload.CreateDonaturRequest{}
 	c.Bind(&payload)
@@ -77,17 +78,18 @@ func DeleteDonaturController(c echo.Context) error {
 			"message":          "failed delete Donatur",
 			"errorDescription": err,
 		})
+	}
 
-err = usecase.DeleteDonatur(uint(id))
+	err = usecase.DeleteDonatur(uint(id))
 	if err != nil {
-		return echo.NeHTTPError(http.StatusBadRequest, map[string]interface{}{
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
 			"message":          "failed delete Donatur",
 			"errorDescription": err,
 		})
 	}
 
-return c.JSON(http.StatusOK, map[string]interface{}{
+	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "success delete pendonor",
 	})
 
-
+}

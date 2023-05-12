@@ -6,18 +6,20 @@ import (
 	"mini_project/models"
 )
 
-func GetTotalQtyByPemberianDarah(pemberianDarahID int) (int, error) {
+func CountTotalQty(id int) (int, error) {
 	var totalQty sql.NullInt64
 	if err := config.DB.Model(&models.DetailBloodDonation{}).
 		Select("COALESCE(SUM(total_qty), 0) AS total_qty").
-		Where("pemberian_darah_id = ?", pemberianDarahID).
+		Where("blood_donation_id = ?", id).
 		Scan(&totalQty).Error; err != nil {
 		return 0, err
 	}
+
 	if totalQty.Valid {
 		return int(totalQty.Int64), nil
+	} else {
+		return 0, nil
 	}
-	return 0, nil
 }
 
 func GetDetailBloodDonation(id uint) (detailDonation *models.DetailBloodDonation, err error) {
@@ -33,8 +35,8 @@ func GetDetailBloodDonationWithTotalQty(id uint) (*models.DetailBloodDonation, i
 		return nil, 0, err
 	}
 
-	// Menghitung total_qty berdasarkan pemberian_darah_id
-	totalQty, err := GetTotalQtyByPemberianDarah(int(detailDonation.BloodDonationID))
+	// Menghitung total_qty berdasarkan blood_donation
+	totalQty, err := CountTotalQty(int(detailDonation.BloodDonationID))
 	if err != nil {
 		return nil, 0, err
 	}

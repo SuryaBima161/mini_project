@@ -21,7 +21,6 @@ type (
 	LoginUserResponse struct {
 		ID    uint   `json:"id"`
 		Email string `json:"email"`
-		Token string `json:"token"`
 	}
 	GetUserByIdResponse struct {
 		Name     string `json:"name"`

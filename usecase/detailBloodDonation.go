@@ -15,22 +15,24 @@ import (
 
 func CreateDetailBloodDonation(req *payload.CreateDetailBloodDonationRequest) (resp payload.CreateDetailDonationRespone, err error) {
 
-	var existingUser models.BloodDonation
-	if err := config.DB.First(&existingUser, req.DonaturID, req.PenerimaID).First(&existingUser).Error; err == nil {
-		return payload.CreateDetailDonationRespone{}, echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
-			"message":          "Pendonor_id or Penerima_id not exists",
-			"errorDescription": err,
-		})
-	} else if err != gorm.ErrRecordNotFound {
+	var existingBloodDonation models.BloodDonation
+	if err := config.DB.Where("donatur_id = ? AND penerima_id = ?", req.DonaturID, req.PenerimaID).First(&existingBloodDonation).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return payload.CreateDetailDonationRespone{}, echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
+				"message":          "donatur_id or penerima_id does not exist",
+				"errorDescription": err.Error(),
+			})
+		}
 		return payload.CreateDetailDonationRespone{}, echo.NewHTTPError(http.StatusInternalServerError, map[string]interface{}{
 			"message":          "failed to query database",
-			"errorDescription": err,
+			"errorDescription": err.Error(),
 		})
 	}
 	detailDonation := &models.DetailBloodDonation{
 		DonaturID:        req.DonaturID,
 		PenerimaID:       req.PenerimaID,
 		MedicalHistoryID: req.MedicalHistoryID,
+		BloodDonationID:  req.BloodDonationID,
 	}
 	err = database.CreateDetailBloodDonation(detailDonation)
 	if err != nil {
@@ -40,7 +42,7 @@ func CreateDetailBloodDonation(req *payload.CreateDetailBloodDonationRequest) (r
 		DonaturID:        detailDonation.DonaturID,
 		PenerimaID:       detailDonation.PenerimaID,
 		MedicalHistoryID: detailDonation.MedicalHistoryID,
-		TotalQty:         detailDonation.TotalQty,
+		BloodDonationID:  req.BloodDonationID,
 	}
 	return
 }
@@ -51,10 +53,7 @@ func GetDetailBloodDonation(id uint) (*payload.GetDetailDonationResponse, error)
 		return nil, err
 	}
 	resp := payload.GetDetailDonationResponse{
-		DonaturID:        getDetailDonation.DonaturID,
-		PenerimaID:       getDetailDonation.PenerimaID,
-		MedicalHistoryID: getDetailDonation.MedicalHistoryID,
-		TotalQty:         getDetailDonation.TotalQty,
+		TotalQty: getDetailDonation.TotalQty,
 	}
 	return &resp, nil
 }
@@ -65,10 +64,7 @@ func GetDetailBloodDonationWithTotalQty(id uint) (*payload.GetDetailDonationResp
 		return nil, 0, err
 	}
 	resp := payload.GetDetailDonationResponse{
-		DonaturID:        getDetailDonation.DonaturID,
-		PenerimaID:       getDetailDonation.PenerimaID,
-		MedicalHistoryID: getDetailDonation.MedicalHistoryID,
-		TotalQty:         getDetailDonation.TotalQty,
+		TotalQty: getDetailDonation.TotalQty,
 	}
 	return &resp, totalQty, nil
 }

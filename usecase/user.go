@@ -3,7 +3,6 @@ package usecase
 import (
 	"errors"
 	"mini_project/config"
-	"mini_project/middleware"
 	"mini_project/models"
 	"mini_project/models/payload"
 	"mini_project/repository/database"
@@ -41,16 +40,10 @@ func LoginUser(req *payload.LoginUserRequest) (resp payload.LoginUserResponse, e
 	if err = bcrypt.CompareHashAndPassword([]byte(loginUser.Password), []byte(req.Password)); err != nil {
 		return
 	}
-	// generate jwts
-	token, err := middleware.CreateToken(int(loginUser.ID))
-	if err != nil {
-		fmt.Println("GetUser: Error Generate token")
-		return
-	}
+
 	resp = payload.LoginUserResponse{
 		ID:    loginUser.ID,
 		Email: loginUser.Email,
-		Token: token,
 	}
 	return
 }
@@ -108,6 +101,15 @@ func GetUserById(id uint) (*payload.GetUserByIdResponse, error) {
 }
 
 func UpdateUser(user *models.User) (err error) {
+	if user.Password != "" {
+		// Hash the new password
+		hash, err := util.HashPassword(user.Password)
+		if err != nil {
+			return err
+		}
+		// Update the user's password with the hashed password
+		user.Password = hash
+	}
 	err = database.UpdateUser(user)
 	if err != nil {
 		fmt.Println("UpdateUser : Error updating user, err: ", err)

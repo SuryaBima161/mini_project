@@ -13,19 +13,20 @@ import (
 
 // get user by id
 func GetUsersIdController(c echo.Context) error {
+	// id := Authorization(c)
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 	user, err := usecase.GetUserById(uint(id))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"messages":         "error get user",
-			"errorDescription": err,
+			"message":          "error get user",
+			"errorDescription": err.Error(),
 		})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "success",
-		"users":  user,
+		"user":   user,
 	})
 }
 
@@ -37,14 +38,14 @@ func CreateUserController(c echo.Context) error {
 	if err := c.Validate(payload); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
 			"message":          "failed create new user",
-			"errorDescription": err,
+			"errorDescription": err.Error(),
 		})
 	}
 	respone, err := usecase.CreateUser(&payload)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"message":          "failed create new user",
-			"errorDescription": err,
+			"errorDescription": err.Error(),
 		})
 	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
@@ -54,6 +55,7 @@ func CreateUserController(c echo.Context) error {
 }
 
 func UpdateUserController(c echo.Context) error {
+	// id := Authorization(c)
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 	user := models.User{}
 	c.Bind(&user)
@@ -61,7 +63,7 @@ func UpdateUserController(c echo.Context) error {
 	if err := usecase.UpdateUser(&user); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"messages":         "error update user",
-			"errorDescription": err,
+			"errorDescription": err.Error(),
 			"errorMessage":     "Mohon Maaf user tidak dapat di ubah",
 		})
 	}
@@ -73,24 +75,17 @@ func UpdateUserController(c echo.Context) error {
 
 // delete user
 func DeleteUserController(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
-			"message":          "failed delete user",
-			"errorDescription": err,
-		})
-	}
-
-	err = usecase.DeleteUser(uint(id))
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
-			"message":          "failed delete user",
-			"errorDescription": err,
+	// id := Authorization(c)
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err := usecase.DeleteUser(uint(id)); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"messages":         "error delete user",
+			"errorDescription": err.Error(),
+			"errorMessage":     "Mohon Maaf user tidak dapat di delete",
 		})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "success delete user",
+		"message": "success update user",
 	})
-
 }

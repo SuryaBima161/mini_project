@@ -18,7 +18,7 @@ func GetMedicalHistory(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"messages":         "error get  Medical History",
-			"errorDescription": err,
+			"errorDescription": err.Error(),
 		})
 	}
 
