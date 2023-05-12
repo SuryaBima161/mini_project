@@ -13,68 +13,76 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateDetailBloodDonation(req *payload.CreateBloodDonationRequest) (resp payload.CreateBloodDonationRespone, err error) {
+func CreateDetailBloodDonation(req *payload.CreateDetailBloodDonationRequest) (resp payload.CreateDetailDonationRespone, err error) {
 
-	var existingUser models.BloodDonation
-	if err := config.DB.First(&existingUser, req.Pendonor_id, req.Penerima_id).First(&existingUser).Error; err == nil {
-		return payload.CreateBloodDonationRespone{}, echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
-			"message":          "Pendonor_id or Penerima_id not exists",
-			"errorDescription": err,
-		})
-	} else if err != gorm.ErrRecordNotFound {
-		return payload.CreateBloodDonationRespone{}, echo.NewHTTPError(http.StatusInternalServerError, map[string]interface{}{
+	var existingBloodDonation models.BloodDonation
+	if err := config.DB.Where("donatur_id = ? AND penerima_id = ?", req.DonaturID, req.PenerimaID).First(&existingBloodDonation).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return payload.CreateDetailDonationRespone{}, echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
+				"message":          "donatur_id or penerima_id does not exist",
+				"errorDescription": err.Error(),
+			})
+		}
+		return payload.CreateDetailDonationRespone{}, echo.NewHTTPError(http.StatusInternalServerError, map[string]interface{}{
 			"message":          "failed to query database",
-			"errorDescription": err,
+			"errorDescription": err.Error(),
 		})
 	}
-	newBloodDonation := &models.BloodDonation{
-		Pendonor_id:    req.Pendonor_id,
-		Penerima_id:    req.Penerima_id,
-		Tanggal_Donasi: req.Tanggal_Donasi,
-		Qty:            req.Qty,
+	detailDonation := &models.DetailBloodDonation{
+		DonaturID:        req.DonaturID,
+		PenerimaID:       req.PenerimaID,
+		MedicalHistoryID: req.MedicalHistoryID,
+		BloodDonationID:  req.BloodDonationID,
 	}
-	err = database.CreateBloodDonation(newBloodDonation)
+	err = database.CreateDetailBloodDonation(detailDonation)
 	if err != nil {
 		return
 	}
-	resp = payload.CreateBloodDonationRespone{
-		Pendonor_id:    newBloodDonation.Pendonor_id,
-		Penerima_id:    newBloodDonation.Penerima_id,
-		Tanggal_Donasi: newBloodDonation.Tanggal_Donasi,
-		Qty:            newBloodDonation.Qty,
+	resp = payload.CreateDetailDonationRespone{
+		DonaturID:        detailDonation.DonaturID,
+		PenerimaID:       detailDonation.PenerimaID,
+		MedicalHistoryID: detailDonation.MedicalHistoryID,
+		BloodDonationID:  req.BloodDonationID,
 	}
 	return
 }
 
-func GetDetailBloodDonation(id uint) (*payload.GetBloodDonationResponse, error) {
-	GetBloodDonation, err := database.GetBloodDonation(id)
+func GetDetailBloodDonation(id uint) (*payload.GetDetailDonationResponse, error) {
+	getDetailDonation, err := database.GetDetailBloodDonation(id)
 	if err != nil {
 		return nil, err
 	}
-	resp := payload.GetBloodDonationResponse{
-		Pendonor_id:    GetBloodDonation.Pendonor_id,
-		Penerima_id:    GetBloodDonation.Penerima_id,
-		Tanggal_Donasi: GetBloodDonation.Tanggal_Donasi,
-		Qty:            GetBloodDonation.Qty,
+	resp := payload.GetDetailDonationResponse{
+		TotalQty: getDetailDonation.TotalQty,
 	}
 	return &resp, nil
 }
 
-func UpdateDetailBloodDonation(BloodDonation *models.BloodDonation) (err error) {
-	err = database.UpdateBloodDonation(BloodDonation)
+func GetDetailBloodDonationWithTotalQty(id uint) (*payload.GetDetailDonationResponse, int, error) {
+	getDetailDonation, totalQty, err := database.GetDetailBloodDonationWithTotalQty(id)
 	if err != nil {
-		fmt.Println("Update : Error updating Pemberian Darah, err: ", err)
+		return nil, 0, err
+	}
+	resp := payload.GetDetailDonationResponse{
+		TotalQty: getDetailDonation.TotalQty,
+	}
+	return &resp, totalQty, nil
+}
+func UpdateDetailBloodDonation(detailDonation *models.DetailBloodDonation) (err error) {
+	err = database.UpdateDetailBloodDonation(detailDonation)
+	if err != nil {
+		fmt.Println("Update : Error updating detail Donation, err: ", err)
 		return
 	}
 	return
 }
-func DeleteDetailBloodDonation(BloodDonationId uint) (err error) {
-	DeleteBloodDonation := models.BloodDonation{
-		ID: BloodDonationId,
+func DeleteDetailBloodDonation(id uint) (err error) {
+	deleteDetailDonation := models.DetailBloodDonation{
+		Model: gorm.Model{ID: id},
 	}
-	err = database.DeleteBloodDonation(&DeleteBloodDonation)
+	err = database.DeleteDetailBloodDonation(&deleteDetailDonation)
 	if err != nil {
-		fmt.Println("Delete: error deleting pemberian Darah , err:", err)
+		fmt.Println("Delete: error deleting detail donation , err:", err)
 		return
 	}
 	return err

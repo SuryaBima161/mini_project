@@ -1,16 +1,18 @@
 package usecase
 
 import (
+	"errors"
 	"mini_project/config"
-	"mini_project/middleware"
 	"mini_project/models"
 	"mini_project/models/payload"
 	"mini_project/repository/database"
+	"mini_project/util"
 
 	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -24,16 +26,24 @@ func LoginUser(req *payload.LoginUserRequest) (resp payload.LoginUserResponse, e
 		fmt.Println("GetUser: Error getting user from database")
 		return
 	}
-	// generate jwt
-	token, err := middleware.CreateToken(int(loginUser.ID))
-	if err != nil {
-		fmt.Println("GetUser: Error Generate token")
+
+	if err := config.DB.Where(loginUser).First(loginUser).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			fmt.Println("User not found")
+			return payload.LoginUserResponse{}, errors.New("invalid email or password")
+		}
+		fmt.Println("Error getting user from database:", err)
+		return payload.LoginUserResponse{}, err
+	}
+
+	// Pembandingan password
+	if err = bcrypt.CompareHashAndPassword([]byte(loginUser.Password), []byte(req.Password)); err != nil {
 		return
 	}
+
 	resp = payload.LoginUserResponse{
 		ID:    loginUser.ID,
 		Email: loginUser.Email,
-		Token: token,
 	}
 	return
 }
@@ -55,13 +65,24 @@ func CreateUser(req *payload.CreateUserRequest) (resp payload.CreateUserResponse
 			"errorDescription": err,
 		})
 	}
+	if req.Password != "" {
+		hash, err := util.HashPassword(req.Password)
+		if err != nil {
+			return payload.CreateUserResponse{}, echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
+				"message":          "error hash password",
+				"errorDescription": err,
+			})
+		}
+		req.Password = hash
+	}
 	err = database.CreateUser(newUser)
 	if err != nil {
 		return
 	}
 	resp = payload.CreateUserResponse{
-		Name:  newUser.Name,
-		Email: newUser.Email,
+		Name:     newUser.Name,
+		Email:    newUser.Email,
+		Password: newUser.Password,
 	}
 	return
 }
@@ -80,6 +101,15 @@ func GetUserById(id uint) (*payload.GetUserByIdResponse, error) {
 }
 
 func UpdateUser(user *models.User) (err error) {
+	if user.Password != "" {
+		// Hash the new password
+		hash, err := util.HashPassword(user.Password)
+		if err != nil {
+			return err
+		}
+		// Update the user's password with the hashed password
+		user.Password = hash
+	}
 	err = database.UpdateUser(user)
 	if err != nil {
 		fmt.Println("UpdateUser : Error updating user, err: ", err)
@@ -87,9 +117,9 @@ func UpdateUser(user *models.User) (err error) {
 	}
 	return
 }
-func DeleteUser(userId uint) (err error) {
+func DeleteUser(id uint) (err error) {
 	deleteUser := models.User{
-		ID: userId,
+		Model: gorm.Model{ID: id},
 	}
 	err = database.DeleteUser(&deleteUser)
 	if err != nil {

@@ -12,14 +12,14 @@ import (
 )
 
 // get user by id
-func getBloodDonationController(c echo.Context) error {
+func GetBloodDonationController(c echo.Context) error {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 	user, err := usecase.GetBloodDonation(uint(id))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"messages":         "error get blood donation",
-			"errorDescription": err,
+			"errorDescription": err.Error(),
 		})
 	}
 
@@ -36,14 +36,14 @@ func CreateBloodDonationController(c echo.Context) error {
 	//validate request body
 	if err := c.Validate(payload); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
-			"message":          "failed create PemberianDarah",
+			"message":          "failed create blood donation",
 			"errorDescription": err,
 		})
 	}
 	respone, err := usecase.CreateBloodDonation(&payload)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"message":          "failed create PemberianDarah",
+			"message":          "failed create blood donation",
 			"errorDescription": err,
 		})
 	}

@@ -11,6 +11,12 @@ func GetDonatur(id uint) (donatur *models.Donatur, err error) {
 	}
 	return donatur, nil
 }
+func GetDonaturWithDetail(id uint) (donatur *models.Donatur, err error) {
+	if err = config.DB.Preload("DetailBloodDonation.TotalQty").First(&donatur, id).Error; err != nil {
+		return donatur, err
+	}
+	return donatur, nil
+}
 
 func CreateDonatur(donatur *models.Donatur) (err error) {
 

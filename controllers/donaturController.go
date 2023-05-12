@@ -11,20 +11,19 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// get user by id
 func GetDonaturIdController(c echo.Context) error {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 	user, err := usecase.GetDonatur(uint(id))
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"messages":         "error get pendonor",
-			"errorDescription": err,
+			"messages":         "error get donatur",
+			"errorDescription": err.Error(),
 		})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"status": "success",
+		"status": "success get donatur",
 		"users":  user,
 	})
 }

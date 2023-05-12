@@ -16,7 +16,7 @@ import (
 func CreateDonatur(req *payload.CreateDonaturRequest) (resp payload.CreateDonaturRespone, err error) {
 
 	var existingUser models.Donatur
-	if err := config.DB.First(&existingUser, req.User_id).First(&existingUser).Error; err == nil {
+	if err := config.DB.First(&existingUser, req.UserID).First(&existingUser).Error; err == nil {
 		return payload.CreateDonaturRespone{}, echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
 			"message":          "User_id not exists",
 			"errorDescription": err,
@@ -28,36 +28,44 @@ func CreateDonatur(req *payload.CreateDonaturRequest) (resp payload.CreateDonatu
 		})
 	}
 	newDonatur := &models.Donatur{
-		User_id:       req.User_id,
-		Name:          req.Name,
-		Jenis_Kelamin: req.Jenis_Kelamin,
-		Tanggal_lahir: req.Tanggal_lahir,
+		UserID:       req.UserID,
+		Name:         req.Name,
+		JenisKelamin: req.JenisKelamin,
+		TanggalLahir: req.Tanggallahir,
 	}
 	err = database.CreateDonatur(newDonatur)
 	if err != nil {
 		return
 	}
 	resp = payload.CreateDonaturRespone{
-		User_id:       newDonatur.User_id,
-		Name:          newDonatur.Name,
-		Jenis_Kelamin: newDonatur.Jenis_Kelamin,
-		Tanggal_lahir: newDonatur.Tanggal_lahir,
+		UserID:       newDonatur.UserID,
+		Name:         newDonatur.Name,
+		JenisKelamin: newDonatur.JenisKelamin,
+		Tanggallahir: newDonatur.TanggalLahir,
 	}
 	return
 }
 
-func GetDonatur(id uint) (*payload.GetDonaturResponse, error) {
-	Donatur, err := database.GetDonatur(id)
+func GetDonatur(id uint) (resp payload.GetDonaturResponse, err error) {
+	donatur, err := database.GetDonatur(id)
 	if err != nil {
-		return nil, err
+		return payload.GetDonaturResponse{}, err
 	}
-	resp := payload.GetDonaturResponse{
-		User_id:       Donatur.User_id,
-		Name:          Donatur.Name,
-		Jenis_Kelamin: Donatur.Jenis_Kelamin,
-		Tanggal_lahir: Donatur.Tanggal_lahir,
+	var detailDonation []payload.GetDetailDonationResponse
+	for _, val := range donatur.DetailBloodDonation {
+		detailDonation = append(detailDonation, payload.GetDetailDonationResponse{
+			TotalQty: val.TotalQty,
+		})
 	}
-	return &resp, nil
+
+	resp = payload.GetDonaturResponse{
+		UserID:              donatur.UserID,
+		Name:                donatur.Name,
+		JenisKelamin:        donatur.JenisKelamin,
+		Tanggallahir:        donatur.TanggalLahir,
+		DetailBloodDonation: detailDonation,
+	}
+	return resp, nil
 }
 
 func UpdateDonatur(Donatur *models.Donatur) (err error) {
@@ -68,9 +76,9 @@ func UpdateDonatur(Donatur *models.Donatur) (err error) {
 	}
 	return
 }
-func DeleteDonatur(DonaturId uint) (err error) {
+func DeleteDonatur(id uint) (err error) {
 	deleteDonatur := models.Donatur{
-		ID: DonaturId,
+		Model: gorm.Model{ID: id},
 	}
 	err = database.DeleteDonatur(&deleteDonatur)
 	if err != nil {

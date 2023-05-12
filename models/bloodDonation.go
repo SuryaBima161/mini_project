@@ -4,11 +4,10 @@ import (
 	"gorm.io/gorm"
 )
 
-type DonationBlood struct {
+type BloodDonation struct {
 	gorm.Model
-	ID             uint   `json:"id" from:"id"`
-	Pendonor_id    uint   `json:"pendonor_id" from:"pendonor_id"`
-	Penerima_id    uint   `json:"penerima_id" from:"penerima_id"`
-	Tanggal_Donasi string `json:"tanggal_donasi" form:"tanggal_donasi"`
-	Qty            string `json:"qty" form:"qty"`
+	DonaturID     uint   `json:"donatur_id" from:"donatur_id" gorm:"foreignkey:DonaturID"`
+	PenerimaID    uint   `json:"penerima_id" from:"penerima_id" gorm:"foreignkey:DonaturID"`
+	TanggalDonasi string `json:"tanggal_donasi" form:"tanggal_donasi"`
+	Qty           string `json:"qty" form:"qty"`
 }
