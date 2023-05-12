@@ -16,7 +16,7 @@ func InitDB() *gorm.DB {
 		"DB_Username": "alta",
 		"DB_Password": "root",
 		"DB_Port":     "3306",
-		"DB_Host":     "127.0.0.1",
+		"DB_Host":     "127.0.1.1",
 		"DB_Name":     "db_donordarah",
 	}
 
