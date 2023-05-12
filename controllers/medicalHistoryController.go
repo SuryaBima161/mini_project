@@ -11,7 +11,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// get user by id
 func GetMedicalHistory(c echo.Context) error {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 	user, err := usecase.GetMedicalHistory(uint(id))
@@ -29,7 +28,6 @@ func GetMedicalHistory(c echo.Context) error {
 	})
 }
 
-// create user
 func CreateMedicalHistoryController(c echo.Context) error {
 	payload := payload.CreateMedicalHistoryRequest{}
 	c.Bind(&payload)

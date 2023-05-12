@@ -34,7 +34,7 @@ func GetDetailBloodDonationWithTotalQty(id uint) (*models.DetailBloodDonation, i
 	}
 
 	// Menghitung total_qty berdasarkan pemberian_darah_id
-	totalQty, err := GetTotalQtyByPemberianDarah(int(detailDonation.Pemberian_darah_id))
+	totalQty, err := GetTotalQtyByPemberianDarah(int(detailDonation.BloodDonationID))
 	if err != nil {
 		return nil, 0, err
 	}

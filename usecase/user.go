@@ -31,7 +31,7 @@ func LoginUser(req *payload.LoginUserRequest) (resp payload.LoginUserResponse, e
 	if err := config.DB.Where(loginUser).First(loginUser).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			fmt.Println("User not found")
-			return payload.LoginUserResponse{}, errors.New("Invalid email or password")
+			return payload.LoginUserResponse{}, errors.New("invalid email or password")
 		}
 		fmt.Println("Error getting user from database:", err)
 		return payload.LoginUserResponse{}, err
@@ -115,9 +115,9 @@ func UpdateUser(user *models.User) (err error) {
 	}
 	return
 }
-func DeleteUser(userId uint) (err error) {
+func DeleteUser(id uint) (err error) {
 	deleteUser := models.User{
-		ID: userId,
+		Model: gorm.Model{ID: id},
 	}
 	err = database.DeleteUser(&deleteUser)
 	if err != nil {

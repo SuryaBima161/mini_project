@@ -16,7 +16,7 @@ import (
 func CreateMedicalHistory(req *payload.CreateMedicalHistoryRequest) (resp payload.CreatMedicalHistoryRespone, err error) {
 
 	var existingUser models.MedicalHistory
-	if err := config.DB.First(&existingUser, req.Pendonor_id).First(&existingUser).Error; err == nil {
+	if err := config.DB.First(&existingUser, req.DonaturID).First(&existingUser).Error; err == nil {
 		return payload.CreatMedicalHistoryRespone{}, echo.NewHTTPError(http.StatusBadRequest, map[string]interface{}{
 			"message":          "Pendonor_id not exists",
 			"errorDescription": err,
@@ -28,20 +28,20 @@ func CreateMedicalHistory(req *payload.CreateMedicalHistoryRequest) (resp payloa
 		})
 	}
 	newMedicalHistory := &models.MedicalHistory{
-		Pendonor_id:         req.Pendonor_id,
-		Tanggal_Pemeriksaan: req.Tanggal_Pemeriksaan,
-		Hasil_Pemeriksaan:   req.Hasil_Pemeriksaan,
-		Golongan_Darah:      req.Golongan_Darah,
+		DonaturID:          req.DonaturID,
+		TanggalPemeriksaan: req.TanggalPemeriksaan,
+		HasilPemeriksaan:   req.HasilPemeriksaan,
+		GolonganDarah:      req.GolonganDarah,
 	}
 	err = database.CreateMedicalHistory(newMedicalHistory)
 	if err != nil {
 		return
 	}
 	resp = payload.CreatMedicalHistoryRespone{
-		Pendonor_id:         newMedicalHistory.Pendonor_id,
-		Tanggal_Pemeriksaan: newMedicalHistory.Tanggal_Pemeriksaan,
-		Hasil_Pemeriksaan:   newMedicalHistory.Hasil_Pemeriksaan,
-		Golongan_Darah:      newMedicalHistory.Golongan_Darah,
+		DonaturID:          newMedicalHistory.DonaturID,
+		TanggalPemeriksaan: newMedicalHistory.TanggalPemeriksaan,
+		HasilPemeriksaan:   newMedicalHistory.HasilPemeriksaan,
+		GolonganDarah:      newMedicalHistory.GolonganDarah,
 	}
 	return
 }
@@ -52,10 +52,10 @@ func GetMedicalHistory(id uint) (*payload.GetMedicalHistoryResponse, error) {
 		return nil, err
 	}
 	resp := payload.GetMedicalHistoryResponse{
-		Pendonor_id:         getMedicalHistory.Pendonor_id,
-		Tanggal_Pemeriksaan: getMedicalHistory.Tanggal_Pemeriksaan,
-		Hasil_Pemeriksaan:   getMedicalHistory.Hasil_Pemeriksaan,
-		Golongan_Darah:      getMedicalHistory.Golongan_Darah,
+		DonaturID:          getMedicalHistory.DonaturID,
+		TanggalPemeriksaan: getMedicalHistory.TanggalPemeriksaan,
+		HasilPemeriksaan:   getMedicalHistory.HasilPemeriksaan,
+		GolonganDarah:      getMedicalHistory.GolonganDarah,
 	}
 	return &resp, nil
 }
@@ -68,9 +68,9 @@ func UpdateMedicalHistory(MedicalHistory *models.MedicalHistory) (err error) {
 	}
 	return
 }
-func DeleteMedicalHistory(MedicalHistoryId uint) (err error) {
+func DeleteMedicalHistory(id uint) (err error) {
 	deleteMedicalHistory := models.MedicalHistory{
-		ID: MedicalHistoryId,
+		Model: gorm.Model{ID: id},
 	}
 	err = database.DeleteMedicalHistory(&deleteMedicalHistory)
 	if err != nil {

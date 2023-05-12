@@ -2,21 +2,21 @@ package payload
 
 type (
 	CreateDetailBloodDonationRequest struct {
-		Pendonor_id uint `json:"pendonor_id" from:"pendonor_id" validate:"required"`
-		Penerima_id uint `json:"penerima_id" form:"penerima_id" validate:"required"`
-		Riwayat_id  uint `json:"riwayat_id"`
+		DonaturID        uint `json:"donatur_id" from:"donatur_id" validate:"required"`
+		PenerimaID       uint `json:"penerima_id" form:"penerima_id" validate:"required"`
+		MedicalHistoryID uint `json:"medical_history_id" form:"medical_history_id" validate:"required"`
 	}
 
 	CreateDetailDonationRespone struct {
-		Pendonor_id uint   `json:"pendonor_id"`
-		Penerima_id uint   `json:"penerima_id"`
-		Riwayat_id  uint   `json:"riwayat_id"`
-		Total_Qty   string `json:"total_qty"`
+		DonaturID        uint   `json:"donatur_id"`
+		PenerimaID       uint   `json:"penerima_id"`
+		MedicalHistoryID uint   `json:"medical_history_id"`
+		TotalQty         string `json:"total_qty"`
 	}
 	GetDetailDonationResponse struct {
-		Pendonor_id uint   `json:"pendonor_id"`
-		Penerima_id uint   `json:"penerima_id"`
-		Riwayat_id  uint   `json:"riwayat_id"`
-		Total_Qty   string `json:"total_qty"`
+		DonaturID        uint   `json:"donatur_id"`
+		PenerimaID       uint   `json:"penerima_id"`
+		MedicalHistoryID uint   `json:"medical_history_id"`
+		TotalQty         string `json:"total_qty"`
 	}
 )
