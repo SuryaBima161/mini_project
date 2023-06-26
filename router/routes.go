@@ -7,10 +7,12 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
 
-func New(e *echo.Echo, db *gorm.DB) {
+func New() *echo.Echo {
+
+	e := echo.New()
+
 	e.Validator = &util.CustomValidator{Validator: validator.New()}
 	midd.LogMiddleware(e)
 
@@ -52,4 +54,6 @@ func New(e *echo.Echo, db *gorm.DB) {
 	detaildonation.GET("/:id", controllers.GetDetailBloodDonationTotalQtyController)
 	detaildonation.DELETE("/:id", controllers.DeleteDetailBloodDonationController)
 	detaildonation.PUT("/:id", controllers.UpdateDetailBloodDonationController)
+
+	return e
 }

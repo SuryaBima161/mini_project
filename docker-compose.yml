@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: db
+    image: mysql:latest
+    ports:
+      - 3307:3306
+    networks:
+      - api_server
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=db_donordarah
+      # - DATABASE_HOST=db
+
+  api:
+    container_name: api
+    image: surya161/miniproject:v1
+    restart: on-failure
+    ports:
+      - 80:8080
+    depends_on:
+      - db
+    # links:
+    #   - db
+    environment:
+      - DB_NAME=db_donordarah
+      - DB_USERNAME=admin
+      - DB_PASSWORD=admin8888
+      - DB_PORT=3306
+      - DB_HOST=db-1.cixea11esonm.ap-southeast-1.rds.amazonaws.com
+    networks:
+      - api_server
+
+networks:
+  api_server:
+    name: api_server
